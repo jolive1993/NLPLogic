@@ -3,61 +3,62 @@ import sys, os
 from pymongo import MongoClient
 from uprint import *
 from textblob import TextBlob
-from textblob.classifiers import NaiveBayesClassifier
 
 class Database:
     def __init__(self):
         self.client = MongoClient()
         self.db = self.client.wikitext
         self.content = self.db.content
-        self.trainSet = self.db.trainset
-        self.unrelated = self.db.unrelated
-    def archiveWiki(self, className, pageName):
+        self.relationships = self.db.relationships
+    def query(self):
+        sub = str(input("Enter name of subject"))
+        if self.content.find_one({'title':str(sub)}) == None:
+            self.archiveWiki(sub)
+        return sub
+    def archiveWiki(self, pageName):
         page = wikipedia.page(str(pageName))
-        result = className.insert_one({
+        result = self.content.insert_one({
             "title":page.title,
             "url":page.url,
             "content":page.content,
             "links":page.links
             })
     def checker(self):
-        print(self.content.count())
+        print(self.relationships.count())
+        print(self.relationships.find_one({'title':"Cat"}))
     def contentGrabber(self, pageName):
         result = self.content.find_one({'title':str(pageName)})
         content = result['content']
         return content
     def extractDataSet(self, name):
-        trimmedSentList = []
         content = self.contentGrabber(str(name))
         blob = TextBlob(content)
-        for sentence in blob.sentences:
-            if sentence.sentiment.polarity > .3:
-                trimmedSentList.append(sentence)
-        return trimmedSentList   
-class Classify:
-    def __init__(self):
-        train = []
-        self.classifer = NaiveBayesClassifier(train)
-    def doclass(self, dataSet):
-        for sentence in dataSet:
-            if (self.classifer.classify(sentence)) == "rel":
-                uprint(sentence + " rel")
-    def updateTrainPos(self, dataSet):
-        train = []
-        for sentence in dataSet:
-            train.append((sentence, "rel"))
-        self.classifer.update(train)
-    def updateTrainNeg(self, dataSet):
-        train = []
-        for sentence in dataSet:
-            train.append((sentence, "irel"))
-        self.classifer.update(train)
-        
-        
-
-
-database = Database()
-classify = Classify()
-buckets = database.contentGrabber("Ontology")
-uprint(buckets)
-
+        return blob
+    def checkForRelationDB(self, sub):
+        if self.relationships.find_one({'title':str(sub)}) == None:
+            result = False
+        else:
+            result = True
+        return result
+    def checkForRelationSub2(self, sub1, sub2):
+        dbEntry = self.relationships.find_one({'title':str(sub1)})
+        try:
+            result = dbEntry[sub2]
+        except:
+            result = None
+        return result
+    def createNewRelation(self, sub1, sub2, relationship):
+        self.relationships.insert_one({'title':sub1, sub2:relationship})
+    def updateRelation(self, sub1, sub2, relationship):
+        self.relationships.update_one({'title':sub1}, {'$set':{sub2:relationship}})
+    def returnRelation(self, sub1):
+        result = self.relationships.find_one({'title':sub1})
+        counter = 0
+        for x in result:
+            try:
+                print(x)
+                print(result[x])
+            except:
+                pass
+shit = Database()
+shit.returnRelation("Cat")
