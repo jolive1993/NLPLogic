@@ -26,5 +26,7 @@ class Main:
                 database.createNewRelation(sub1, sub2, relationship)
             dumper = database.returnRelation(sub1)
             file.update(dumper)
+            dumper2 = database.returnSecondLevelRelations(dumper)
+            file.updateSeconndLevel(dumper2)
         
 Main()

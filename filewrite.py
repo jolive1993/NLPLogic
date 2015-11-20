@@ -12,3 +12,7 @@ class File:
                 newDict[x] = dict[x]
         json.dump(newDict, self.file)
         self.file.close()
+    def updateSeconndLevel(self, dict):
+        self.file = open ('secondrelations.json', 'w')
+        json.dump(dict, self.file)
+        self.file.close()

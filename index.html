@@ -20,38 +20,71 @@
 <script src="sigma.min.js"></script>
 <script>
     function getRandomArbitrary() {
-        return Math.random() * (100 - (-100)) + (-100);
+        return Math.random() * (10 - (-10)) + (-10);
     }
-        var x;
-        var s = new sigma('container');
-        var counter = 0;
-        s.graph.addNode({
-            id: '1',
-            label: data['title'],
-            x: 0,
-            y: 0,
-            size: .15,
-            color: '#553388'
-        });
-        for (x in data) {
-            if (x != 'title') {
-                counter += 1;
-                s.graph.addNode({
-                    id: 'n' + counter,
-                    label: x,
-                    x: getRandomArbitrary() / data[x],
-                    y: getRandomArbitrary() / data[x],
-                    size: data[x],
-                    color: '#f15928'
+    var x;
+    var y;
+    var z;
+    var s = new sigma('container');
+    var counter = 0;
+    var counter2 = 0;
+    s.graph.addNode({
+        id: '1',
+        label: data['title'],
+        x: 0,
+        y: 0,
+        size: .15,
+        color: '#553388'
+    });
+    for (x in data) {
+        if (x != 'title') {
+            counter += 1;
+            s.graph.addNode({
+                id: x,
+                label: x,
+                x: getRandomArbitrary() / data[x],
+                y: getRandomArbitrary() / data[x],
+                size: data[x],
+                color: '#f15928'
                 });
-                s.graph.addEdge({
-                    id: 'e' + counter,
-                    source: 'n' + counter,
-                    target: '1'
-                });
+            s.graph.addEdge({
+                id: 'e' + counter,
+                source: x,
+                target: '1'
+            });
+        }
+    }
+    s.refresh();
+    for (y in data2) {
+        for (z in data2[y]) {
+            if (z != "title") {
+                try {
+                    counter2 += 1
+                    s.graph.addNode({
+                        id: z,
+                        label: z,
+                        x: getRandomArbitrary() / .1,
+                        y: getRandomArbitrary() / .1,
+                        size: .1,
+                        color: '#3366cc'
+                    });
+                    s.graph.addEdge({
+                        id: 'ee' + counter2,
+                        source: z,
+                        target: y
+                    });
+                }
+                catch(ex){
+                    s.graph.addEdge({
+                        id: 'ee' + counter2,
+                        source: z,
+                        target: y
+                    });
+                }
             }
         }
-        s.refresh();
+    }
+    s.refresh();
 </script>
 </body>
 </html>

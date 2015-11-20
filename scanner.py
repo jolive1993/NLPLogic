@@ -54,5 +54,17 @@ class Database:
     def returnRelation(self, sub1):
         result = self.relationships.find_one({'title':sub1})
         return result
-shit = Database()
-shit.returnRelation("Cat")
+    def returnSecondLevelRelations(self, data):
+        dictOfDicts = {}
+        for x in data:
+            if x != '_id' or 'title': 
+                newData = self.returnRelation(x)
+                if newData != None:
+                        newDict = {}
+                        for y in newData:
+                            if y != "_id" or "title":
+                                newDict[y] = newData[y]
+                        dictOfDicts[x] = newDict
+        return dictOfDicts
+    def deleteAllRelationships(self):
+        self.relationships.delete_many({})
