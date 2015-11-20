@@ -53,12 +53,6 @@ class Database:
         self.relationships.update_one({'title':sub1}, {'$set':{sub2:relationship}})
     def returnRelation(self, sub1):
         result = self.relationships.find_one({'title':sub1})
-        counter = 0
-        for x in result:
-            try:
-                print(x)
-                print(result[x])
-            except:
-                pass
+        return result
 shit = Database()
 shit.returnRelation("Cat")
